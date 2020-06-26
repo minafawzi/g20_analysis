@@ -1,0 +1,104 @@
+html {
+    height: 100%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#main{padding-left: 25px; }
+
+#content_footer {
+    padding-left:20px;
+    background-color: rgb(226, 226, 226);
+}
+#final_text{
+    text-align: center;
+}
+.image { 
+    position: relative; 
+    width: 100%; /* for IE 6 */
+ }
+#content ul { padding-left:40px;}
+
+h2{text-align: center;}
+
+.container {
+    position: relative;
+    text-align: left;
+    
+  }
+
+  #overviewTex
+  {
+      text-align: left;
+  }
+
+  .line{
+    width: 97.5%;
+    
+    border-bottom: 1px solid black;
+    position: absolute;
+    }
+
+  #topText 
+  {
+      text-align: justify;
+      font-size: 15px;
+  }
+  
+  .top-left {
+    position: absolute;
+    font-size: 1.1vw;
+    font-optical-sizing: auto;
+    top: 20px;
+    height: 90px;
+    left: 20px;
+    right:20px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(51, 51, 51, 0.74);
+    color: white;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .row
+  {
+align-self: center;
+  }
+
+/* this section is for the sliding areas in G20 page */
+  #flip {
+    /*padding: 5px;*/
+    text-align: center;
+    background-color: rgb(226, 226, 226);
+    cursor: pointer;
+  }
+  #panel
+  {
+    display: none;
+    padding: 5px;
+    text-align: center;
+    padding: 50px;
+  }
+
+  /* Table formatting for the reference page*/
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+  

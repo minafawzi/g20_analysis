@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="pragma" content="no-cache" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/visual.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        /*
+        This functions draws all the chart by calling the drawChart function with the different arguments
+        */
+
+        function drawCharts() {
+            
+            drawChart('currentInfo', 'SELECT L,M', G20GDPRepresentationHandler);            // for the GDP piechart at the beginning 
+            drawChart('currentInfo', 'SELECT L,N', G20PopulationPRepresentationHandler);    // for the Population iechart at the beginning 
+            drawChart('currentInfo', 'SELECT L,O', G20LandAreaRepresentationHandler);       // for the Landarea piechart at the beginning 
+            drawChart('currentInfo', 'SELECT L,O', G20LandAreaRepresentationHandler);       // for the Landarea piechart at the beginning 
+            drawChart('bubbleChartData', 'SELECT A,B,C,D,E', G20overviewHandler);           // for he bubble chart
+            drawChart('byContinent', 'SELECT A,B,D', continentRepresentationHandlerGDP);              // for the column chart at the end of the page to continent rep
+            drawChart('byContinent', 'SELECT A,F,G', continentRepresentationHandlerPopulation);       // for the column chart at the end of the page to continent rep
+            drawChart('byContinent', 'SELECT A,I,J', continentRepresentationHandlerLandArea);         // for the column chart at the end of the page to continent rep
+
+        } // end of drawCharts
+
+
+        // logging error 
+        function checkError(response)
+        {
+            if(response.isError())
+            {
+                console.log('Error in quere:' + response.getMessage());
+                }
+        }
+
+        /* 
+        This is the draw chart function that capture the query and the sheet name of the online excel file and execute the query to pass the result to response handler which will 
+        draw the chart
+        */
+        function drawChart(sheetName, query, responseHandler) {
+            var queryString = encodeURIComponent(query);
+            var query = new google.visualization.Query(
+                'https://docs.google.com/spreadsheets/d/1Yki5LPTnPEHALq2QpbMJ6oh3JumwP9eYekq-FixhSmI/gviz/tq?sheet=' 
+                        + sheetName + '&headers=1&tq=' + queryString); //Query
+            query.send(responseHandler);
+        } 
+
+        /* The next 3 functions are drawing the charts representing the continents */
+        function continentRepresentationHandlerGDP(response) {
+            checkError(response);
+            var data = response.getDataTable();
+            var options = { vAxis: {title: 'GDP in Billions'}, hAxis: {title: 'Continents'}};
+            var chart = new google.visualization.ColumnChart(document.getElementById("continentRepresentationGDP"));
+            chart.draw(data, options);
+        } 
+        function continentRepresentationHandlerPopulation(response) {
+            checkError(response);
+            var data = response.getDataTable();
+            var options = { vAxis: {title: 'Population in Millions'}, hAxis: {title: 'Continents'}};
+            var chart = new google.visualization.ColumnChart(document.getElementById("continentRepresentationPopulation"));
+            chart.draw(data, options);
+        } 
+        function continentRepresentationHandlerLandArea(response) {
+            checkError(response);
+            var data = response.getDataTable();
+            var options = { vAxis: {title: 'Land Area in square miles'}, hAxis: {title: 'Continents'}};
+            var chart = new google.visualization.ColumnChart(document.getElementById("continentRepresentationLandArea"));
+            chart.draw(data, options);
+        } 
+
+
+        // The following three functions are drawing the pie chart showing how G20 countries are representing major global percentatge
+        function G20GDPRepresentationHandler(response) {
+            checkError(response);
+            var data1 = response.getDataTable();
+            var options = {};
+            var chart = new google.visualization.PieChart(document.getElementById("G20RepresentationGDP"));
+            chart.draw(data1, options);
+        } 
+        function G20PopulationPRepresentationHandler(response) {
+            checkError(response);
+            var data1 = response.getDataTable();
+            var options = {};
+            var chart = new google.visualization.PieChart(document.getElementById("G20RepresentationPopulation"));
+            chart.draw(data1, options);
+        } 
+        function G20LandAreaRepresentationHandler(response) {
+            checkError(response);
+            var data1 = response.getDataTable();
+            var options = {};
+            var chart = new google.visualization.PieChart(document.getElementById("G20RepresentationLandArea"));
+            chart.draw(data1, options);
+        } 
+
+        // The handler that is drawing the bubble chart
+        function G20overviewHandler(response) {
+            checkError(response);
+            var data1 = response.getDataTable();
+            var options = {
+              hAxis: {title: 'GDP'},
+              vAxis: {title: 'Land Area'},
+              bubble: {textStyle: {fontSize: 11}}      };
+            var chart = new google.visualization.BubbleChart(document.getElementById("G20overview"));
+            chart.draw(data1, options);
+        } 
+
+        // jQuery section that expands the panel with the 19 flags
+        $(document).ready(function()
+        {
+          $("#flip").click(function()
+          {
+            $("#panel").slideToggle("slow");
+          });
+        });
+
+      </script>
+
+    <title>G20 Countries Analysis</title>
+</head>
+<body>
+    <div>
+    <!--<nav class="navbar navbar-default navbar-fixed-top">-->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#"></a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li><a href="index.html">Home</a></li>
+            <li class="active"><a href="#">The G20</a></li>
+            <li><a href="Spending.html">Spending Analysis</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="References.html">References</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="services container">
+      <h2></h2>
+      <div id="topText">
+      <p>The G20 (The Group of 20) is an international forum combining twenty major economies representing 19 countries and the European Union.
+        The mission of the G20 is maintain an economic collaboration ensuring stable financial systems.  While the member countries represent significant global GDP, trade, 
+        population and land area, critisims around bad representation of Africa within the G20 member countries of the G20 which is limited to South Africa. the below visualizations 
+        explains the powerful member economies of the G20 but also shows the poor representation of Africa.
+        <br> 
+        The analysis conducted in this website is focused on the 19 countries as listed below.<br><br><br></p>
+    </div>
+    
+
+<br>
+
+<!-- 
+  Flip and panel div are used by the jQuery script to slide the panel
+  Class row will encapsulate sections for the 19 countries flags.
+  sections are defined as fows to make use of bootstrap functionality to fit different browser size
+-->
+<div id="flip"><b>View/Hide all countries</b><br></div>
+    <div class="row" id="panel">
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/argentina-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Argentina</h3>
+          <p>
+            <b>GDP:</b>$510 bn<br>
+            <b>Population:</b>44.5 mn<br>
+            <b>Land area:</b>1,056.6 mi2<br>
+          </br>
+          </p>
+        </section>
+    
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/australia-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Australia</h3>
+          <p>
+            <b>GDP:</b>$1,433.9 bn<br>
+            <b>Population:</b>25 mn<br>
+            <b>Land area:</b>1,148 mi2<br>
+          </br>
+          </p>
+        </section>
+        
+        <div class="clearfix visible-sm-block"></div>
+        
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/brazil-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Brazil</h3>
+          <p>
+            <b>GDP:</b>$1,885.5 bn<br>
+            <b>Population:</b>209 mn<br>
+            <b>Land area:</b>3,266.6 mi2<br>
+          </br>
+          </p>
+        </section>
+    
+    
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/canada-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Canada</h3>
+          <p>
+            <b>GDP:</b>$1,713.5 bn<br>
+            <b>Population:</b>37.1 mn<br>
+            <b>Land area:</b>3,511.6 mi2<br>
+          </br>
+          </p>
+        </section>
+    
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/china-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>China</h3>
+          <p>
+            <b>GDP:</b>$13,608.2 bn<br>
+            <b>Population:</b>1,392.7 mn<br>
+            <b>Land area:</b>3.601 mi2<br>
+          </br>
+          </p>
+        </section>
+    
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/france-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>France</h3>
+          <p>
+            <b>GDP:</b>$2,777.5 bn<br>
+            <b>Population:</b>67 mn<br>
+            <b>Land area:</b>247.3 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <div class="clearfix visible-lg-block"></div>
+        
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/germany-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Germany</h3>
+          <p>
+            <b>GDP:</b>$3,947.6 bn<br>
+            <b>Population:</b>82.9 mn<br>
+            <b>Land area:</b>134 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/india-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>India</h3>
+          <p>
+            <b>GDP:</b>$2,718.7 bn<br>
+            <b>Population:</b>1,352.6 mn<br>
+            <b>Land area:</b>1,148 mi2<br>
+          </br>
+          </p>
+        </section> 
+        
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/indonesia-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Indonesia</h3>
+          <p>
+            <b>GDP:</b>$1.042.2 bn<br>
+            <b>Population:</b>267.7 mn<br>
+            <b>Land area:</b>699.5 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/italy-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Italy</h3>
+          <p>
+            <b>GDP:</b>$2,083.9 bn<br>
+            <b>Population:</b>60.4 mn<br>
+            <b>Land area:</b>113.6 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/japan-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Japan</h3>
+          <p>
+            <b>GDP:</b>$4,971.3 bn<br>
+            <b>Population:</b>126.5 mn<br>
+            <b>Land area:</b>141 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/mexico-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Mexico</h3>
+          <p>
+            <b>GDP:</b>$1,220.7 bn<br>
+            <b>Population:</b>126.2 mn<br>
+            <b>Land area:</b>750.6 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/russia-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Russia</h3>
+          <p>
+            <b>GDP:</b>$1,657.6 bn<br>
+            <b>Population:</b>144.5 mn<br>
+            <b>Land area:</b>6,323.5 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/saudi-arabia-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Saudi Arabia</h3>
+          <p>
+            <b>GDP:</b>$786.5 bn<br>
+            <b>Population:</b>33.7 mn<br>
+            <b>Land area:</b>830.0 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/south-africa-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>South Africa</h3>
+          <p>
+            <b>GDP:</b>$368.3 bn<br>
+            <b>Population:</b>57.8 mn<br>
+            <b>Land area:</b>468.9 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/south-korea-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>South Korea</h3>
+          <p>
+            <b>GDP:</b>$1,619.4 bn<br>
+            <b>Population:</b>51.6 mn<br>
+            <b>Land area:</b>38.0 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/turkey-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>Turkey</h3>
+          <p>
+            <b>GDP:</b>$771.4 bn<br>
+            <b>Population:</b>82.3 mn<br>
+            <b>Land area:</b>297.2 mi2<br>
+          </br>
+          </p>
+        </section>   
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/united-kingdom-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>United Kingdom</h3>
+          <p>
+            <b>GDP:</b>$2,855.3 bn<br>
+            <b>Population:</b>66.5 mn<br>
+            <b>Land area:</b>93 mi2<br>
+          </br>
+          </p>
+        </section> 
+
+        <section class="col-sm-6 col-md-4 col-lg-2">
+          <img class="icon" src="images/united-states-of-america-flag-small.png" alt="Icon" width="65" length="65">
+          <h3>United States</h3>
+          <p>
+            <b>GDP:</b>$20,544.3 bn<br>
+            <b>Population:</b>326.7 mn<br>
+            <b>Land area:</b>3531.9 mi2<br>
+          </br>
+          </p>
+        </section> 
+    </div><!-- row -->   
+
+    <div class="line"></div>
+
+    <div class="row" id="overviewTex">
+     
+        <h6 style="text-align: center;"><br><h4><b>G20 countries overview</b></h4>
+        <p>G20 includes the following key countries:<br></p>
+        <ul>
+          <li>USA, the biggest economy in the world</li>
+          <li>China and India where both represents more than 3rd if the world population</li>
+          <li>Russia and Canada, the largest two countries in the world in land area</li>
+        </ul>
+      <section class="col-sm-6 col-md-4 col-lg-2">
+        <div id="G20overview" style="width:90em ; height: 50em;"></div>
+      </section>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="row">
+      <section class="col-sm-6 col-md-4 col-lg-4">
+        <h6 style="text-align: left;"><b>GDP of the G20 countries</b></h6>
+        <div id="G20RepresentationGDP" style="width: 300px; height: 180px;"></div>
+      </section>
+
+      <section class="col-sm-6 col-md-4 col-lg-4">
+        <h6 style="text-align: left;"><b>Population of the G20 countries</b></h6>
+        <div id="G20RepresentationPopulation" style="width: 300px; height: 180px;"></div>
+      </section>
+
+      <section class="col-sm-6 col-md-4 col-lg-4">
+        <h6 style="text-align: left;"><b>Land Area of the G20 countries</b></h6>
+        <div id="G20RepresentationLandArea" style="width: 300px; height: 180px;"></div>
+      </section>
+    </div>
+</br>
+<div class="line"></div>
+    
+<div class="row">
+  <h4>How Continents are represented in the G20</h4>
+  <section class="col-sm-6 col-md-4 col-lg-4">
+    <div id="continentRepresentationGDP" style="width: 500px; height: 300px;"></div>
+  </section>
+
+  <section class="col-sm-6 col-md-4 col-lg-4">
+    <div id="continentRepresentationPopulation" style="width: 500px; height: 300px;"></div>
+  </section>
+
+  <section class="col-sm-6 col-md-4 col-lg-4">
+    <div id="continentRepresentationLandArea" style="width: 500px; height: 300px;"></div>
+  </section>
+</div>
+<br>
+<br>
+    <div id="content_footer">
+            <div id="footer">
+                Copyright &copy; 
+                <script>
+                    var d = new Date();
+                    document.write(d.getFullYear());
+                </script>
+                 | Mina Hanna
+                 | GWU
+            </div><!--footer-->
+      </div> <!--Content_footer-->
+
+
+       
+<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

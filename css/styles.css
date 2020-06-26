@@ -1,0 +1,16 @@
+html {
+    height: 100%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+#description{padding-top: 200px; }
+
+#content_footer {
+    background: url(images/banner.jpg) repeat-y;
+}
+

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="pragma" content="no-cache" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/visual.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+       google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        /*
+        This functions draws all the chart by calling the drawChart function with the different arguments
+        */
+
+        function drawCharts() {
+            
+            drawChart('spendingData2017', 'SELECT A,B,C,D,E', spendingDataHandler);            // for the GDP piechart at the beginning 
+
+
+        } // end of drawCharts
+
+        // logging error 
+        function checkError(response)
+        {
+            if(response.isError())
+            {
+                console.log('Error in quere:' + response.getMessage());
+                }
+        }
+
+        /* 
+        This is the draw chart function that capture the query and the sheet name of the online excel file and execute the query to pass the result to response handler which will 
+        draw the chart
+        */
+        function drawChart(sheetName, query, responseHandler) {
+            var queryString = encodeURIComponent(query);
+            var query = new google.visualization.Query(
+                'https://docs.google.com/spreadsheets/d/1Yki5LPTnPEHALq2QpbMJ6oh3JumwP9eYekq-FixhSmI/gviz/tq?sheet=' 
+                        + sheetName + '&headers=1&tq=' + queryString); //Query
+            query.send(responseHandler);
+        } 
+
+        /* The next 3 functions are drawing the charts representing the continents */
+        function spendingDataHandler(response) {
+            checkError(response);
+            var data = response.getDataTable();
+            var options = {width: 600, height: 500, legend: { position: 'top', maxLines: 3 }, bar: { groupWidth: '60%' }, isStacked: true };
+            var chart = new google.visualization.BarChart(document.getElementById("spendingData"));
+            chart.draw(data, options);
+        } 
+
+      </script>
+
+    <title>Spending Analysis</title>
+</head>
+<body>
+    <div>
+    <!--<nav class="navbar navbar-default navbar-fixed-top">-->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#"></a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li><a href="index.html">Home</a></li>
+            <li class="active"><a href="#">The G20</a></li>
+            <li><a href="Spending.html">Spending Analysis</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="References.html">References</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="services container">
+      <h2></h2>
+      <div id="topText">
+      <p>The G20 (The Group of 20) is an international forum combining twenty major economies representing 19 countries and the European Union.
+        The mission of the G20 is maintain an economic collaboration ensuring stable financial systems.  While the member countries represent significant global GDP, trade, 
+        population and land area, critisims around bad representation of Africa within the G20 member countries of the G20 which is limited to South Africa. the below visualizations 
+        explains the powerful member economies of the G20 but also shows the poor representation of Africa.
+        <br> 
+        The analysis conducted in this website is focused on the 19 countries as listed below.<br><br><br></p>
+    </div>
+    
+
+<br>
+
+
+    <div class="line"></div>
+
+    <div class="line"></div>
+
+</br>
+<div class="line"></div>
+    
+<div class="row">
+  <h5>How Continents are represented in the G20</h5>
+  <section class="col-sm-6 col-md-4 col-lg-4">
+    <div id="continentRepresentationGDP" style="width: 500px; height: 300px;"></div>
+  </section>
+
+  
+  <section class="col-sm-6 col-md-4 col-lg-4">
+        <div id="spendingData" style="width: 500px; height: 300px;"></div>
+  </section>
+  
+
+  <section class="col-sm-6 col-md-4 col-lg-4">
+    <div id="continentRepresentationLandArea" style="width: 500px; height: 300px;"></div>
+  </section>
+</div>
+
+    <div id="content_footer">
+            <div id="footer">
+                Copyright &copy; 
+                <script>
+                    var d = new Date();
+                    document.write(d.getFullYear());
+                </script>
+                 | Mina Hanna
+                 | GWU
+            </div><!--footer-->
+      </div> <!--Content_footer-->
+
+
+       
+<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

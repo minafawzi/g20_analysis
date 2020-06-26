@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!--
+  This page uses bootstrap library for the menu on the top and the alignment of all the sections
+  Google Visulaization is then used for all the charts
+
+  
+-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="pragma" content="no-cache" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/visual.css">
+    
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawCharts);
+
+        /*
+        This functions draws all the chart by calling the drawChart function with the different arguments
+        */
+
+        function drawCharts() {
+            
+            drawChart('spendingData2017', 'SELECT A,B,C,D,E', spendingDataHandler);                   // for the GDP bar chart at the beginning 
+            drawChart('spendingData2017', 'SELECT A,N,O,P', spendingDataHandlerMilitary);            // for the GDP second bar chart at the beginning 
+            drawChart('spendingData2017', 'SELECT K,G,H,I,J', perCapitaComparisonHandler);            // for the GDP column Chart at the beginning 
+            drawChart('annualGrowth', 'SELECT A,H', annualGrowthGeoChartHandler);                  // for the GDP Geo Chart at the end 
+            drawChart('annualGrowth', 'SELECT A,L', annualGrowthPerCapitaGeoChartHandler);                  // for the GDP Geo Chart at the end 
+
+        } // end of drawCharts
+
+        // logging error 
+        function checkError(response)
+        {
+            if(response.isError())
+            {
+                console.log('Error in quere:' + response.getMessage());
+                }
+        }
+
+        /* 
+        This is the draw chart function that capture the query and the sheet name of the online excel file and execute the query to pass the result to response handler which will 
+        draw the chart
+        */
+        function drawChart(sheetName, query, responseHandler) {
+            var queryString = encodeURIComponent(query);
+            var query = new google.visualization.Query(
+                'https://docs.google.com/spreadsheets/d/1Yki5LPTnPEHALq2QpbMJ6oh3JumwP9eYekq-FixhSmI/gviz/tq?sheet=' 
+                        + sheetName + '&headers=1&tq=' + queryString); //Query
+            query.send(responseHandler);
+        } 
+
+        /* The next 2 functions are drawing the charts representing the spending  */
+        function spendingDataHandler(response) {
+            checkError(response);
+            var data = response.getDataTable();
+            //data.sort({column: 1, desc: true});
+            var options = {width: 850, height: 500, legend: { position: 'top', maxLines: 3 }, bar: { groupWidth: '60%' }, isStacked: true, vAxis:{title:"% of total GDP"},hAxis: {title: 'Country', showTextEvery:1}};
+            var chart = new google.visualization.ColumnChart(document.getElementById("spendingData"));
+            chart.draw(data, options);
+        } //spendingDataHandler
+
+        function spendingDataHandlerMilitary(response) {
+            checkError(response);
+            var data = response.getDataTable();
+            //data.sort({column: 1, desc: true});
+            var options = {width: 850, height: 500, legend: { position: 'top', maxLines: 3 }, bar: { groupWidth: '60%' }, isStacked: true, vAxis: {title: 'Country', showTextEvery:1}, hAxis: {title: 'Bn Dollar', showTextEvery:1}};
+            var chart = new google.visualization.BarChart(document.getElementById("spendingDataMilitary"));
+            chart.draw(data, options);
+        } //spendingDataHandlerMilitary
+
+        /* This is for the bar chart comparing the per capita spending
+            log scalling was used to avoid ouliers with very high and very low GDP in the G20
+        */
+
+        function perCapitaComparisonHandler(response) {
+            checkError(response);
+            var data = response.getDataTable();
+            
+            var options = {width: 900, height: 700, legend: { position: 'top', maxLines: 3 }, bar: { groupWidth: '75%' }, vAxis: {scaleType: 'log', title: 'GDP: Log-scaled' /*,viewWindow: { max:15000 }*/}};
+            var chart = new google.visualization.ColumnChart(document.getElementById("perCapitaSpendingComparison"));
+            chart.draw(data, options);
+        } //perCapitaComparisonHandler
+
+
+        // this function is to draw the geochart to visualize the growth rate
+        function annualGrowthGeoChartHandler(response) {
+            var data = response.getDataTable();
+            var chart = new google.visualization.GeoChart(document.getElementById('annualGrowth'));
+            var options = {
+            width: 750, height: 500,
+            sizeAxis: { minValue: 0, maxValue: 100 },
+            colorAxis: {colors: ['#e7711c', '#4374e0']} // orange to blue
+            };
+            chart.draw(data, options);
+        } //annualGrowthGeoChartHandler
+        
+        // this function is to draw the geochart to visualize the growth rate per capita 
+        function annualGrowthPerCapitaGeoChartHandler(response) {
+            var data = response.getDataTable();
+            var chart = new google.visualization.GeoChart(document.getElementById('annualGrowthPerCapita'));
+            var options = {
+            width: 750, height: 500,
+            sizeAxis: { minValue: 0, maxValue: 100 },
+            colorAxis: {colors: ['#e7711c', '#4374e0']} // orange to blue
+            };
+            chart.draw(data, options);
+        }//annualGrowthPerCapitaGeoChartHandler
+
+      </script>
+  
+    <title>G20 Spending Analysis</title>
+
+</head>
+<body>
+    <div>
+    <!--<nav class="navbar navbar-default navbar-fixed-top">-->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#"></a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li><a href="index.html">Home </a></li>
+            <li><a href="G20.html">The G20 </a></li>
+            <li class="active"><a href="#">Spending Analysis</a></li>      
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="References.html">References</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <h2></h2>
+      <div id="topText">
+      <p></p>
+    </div>
+
+    <!-- Intro text-->
+    <div class="row" id="IntroText">
+      <section class="col-sm-12 col-md-12 col-lg-12">
+        <p>The following visualizations focuses on the G20 governments spending on health care, education and military. Some charts are capturing yearly figures and the drop down list can be used to navigate through the analayzed years from 2013 to 2017. </p>
+        <br>
+      </section>
+    </div>
+
+  <p></p>
+  <div class="line"></div>
+
+    
+     <!-- First Analysis block-->
+      <br>
+          <div class="row" id="firstAnalysis">
+            <section class="col-sm-6 col-md-4 col-lg-4">
+              <br>
+              <br>
+              <p><br>Comparing the G20 governments spending against their GDP shows that combined spending on military, education and health cares varies from 7.5% to around 26% which reflects the different government structures and economical diversity for the G20 countries.  </p>
+              <br>
+              <label for="years">Year</label>
+                  <select name="years" id="years1" onchange="change1()"> 
+                      <option value="2013">2013</option>
+                      <option value="2014">2014</option>
+                      <option value="2015">2015</option>
+                      <option value="2016">2016</option>
+                      <option selected="selected">2017</option>
+                  </select>
+                  <br>  
+            </section>
+            <section class="col-sm-6 col-md-4 col-lg-4">
+                  <div id="spendingData" style="width: 600px; height: 500px;"></div>
+            </section>
+          </div>
+          <script>
+              function change1() 
+              {
+                var listbox = document.getElementById("years1");
+                var selIndex = listbox.selectedIndex;
+                var selValue = listbox.options[selIndex].value;
+                var selText  = listbox.options[selIndex].text;
+                drawChart('spendingData'+selText, 'SELECT A,B,C,D,E', spendingDataHandler);
+              }
+          </script>
+        <p></p>
+        <div class="line"></div>
+
+        <!--End of first analysis block-->
+
+       <!-- Second Analysis block-->
+      <br>
+      <div class="row" id="secondAnalysis">
+        <section class="col-sm-6 col-md-6 col-lg-4">
+          <br>
+          <br>
+          <p><br>On the top of the differences between the combined spending, the G20 countries also have different spending patterns in each of the analyzed category. Saudi Arabia is the only country in the G20 with military spending exceeding education and healthcare while Japan has the lowest military spending as percentage of GDP.</p>
+          <br>
+          <label for="years">Year</label>
+              <select name="years" id="years2" onchange="change2()"> 
+                  <option value="2013">2013</option>
+                  <option value="2014">2014</option>
+                  <option value="2015">2015</option>
+                  <option value="2016">2016</option>
+                  <option selected="selected">2017</option>
+              </select>
+              <br>  
+        </section>
+        <section class="col-sm-6 col-md-6 col-lg-4">
+              <div id="spendingDataMilitary" style="width: 600px; height: 500px;"></div>
+        </section>
+      </div>
+      <script>
+          function change2() 
+          {
+            var listbox = document.getElementById("years2");
+            var selIndex = listbox.selectedIndex;
+            var selValue = listbox.options[selIndex].value;
+            var selText = listbox.options[selIndex].text;
+            drawChart('spendingData'+selText, 'SELECT A,N,O,P', spendingDataHandlerMilitary);
+          }
+      </script>
+    <p></p>
+    <div class="line"></div>
+
+    <!--End of second analysis block-->
+
+    <!-- Third Analysis block-->
+     <br>
+     <div class="row" id="thirdAnalysis">
+       <section class="col-sm-6 col-md-6 col-lg-4">
+         <br>
+         <br>
+         <p><br>To have a deeper look on the spending and to include the population in the analysis, the following figure analyze the per capita spending.Here it is obvious that the healthcare is usually the highest spending per capita among the analyzed buckets. </p>
+         <br>
+         <label for="years">Year</label>
+             <select name="years" id="years3" onchange="change3()"> 
+                 <option value="2013">2013</option>
+                 <option value="2014">2014</option>
+                 <option value="2014">2015</option>
+                 <option value="2014">2016</option>
+                 <option selected="selected">2017</option>
+             </select>
+       </section>
+       <section class="col-sm-6 col-md-6 col-lg-4">
+             <div id="perCapitaSpendingComparison" style="width: 600px; height: 700px;"></div>
+       </section>
+     </div>
+     <script>
+         function change3() 
+         {
+           var listbox = document.getElementById("years3");
+           var selIndex = listbox.selectedIndex;
+           var selValue = listbox.options[selIndex].value;
+           var selText = listbox.options[selIndex].text;
+           drawChart('spendingData'+selText, 'SELECT K,G,H,I,J', perCapitaComparisonHandler);
+         }
+     </script>
+   <p></p>
+   <div class="line"></div>
+
+   <!--End of Third analysis block-->
+
+    <!-- fourth Analysis block-->
+    <br>
+    <div class="row" id="fourthAnalysis">
+      <section class="col-sm-6 col-md-6 col-lg-4">
+        <br>
+        <br>
+        <p><br>Since we are analyzing the data over 5 years, the following figure reflecrs the annaul growth in GDP percentage that took place from 2013 to 2017 for both health care and education spending combined. Saudi Arabia, Turkey, India and Indonesia, Saudi Arabi are having declining percentage of GDP while US, Japan and Germany and leading the G20 countries with increased GDP percentage for education and health care spending.</p>
+        <br>
+      </section>
+      <section class="col-sm-6 col-md-6 col-lg-4">
+            <div id="annualGrowth" style="width: 600px; height: 500px;"></div>
+      </section>
+    </div>
+
+  <p></p>
+  <div class="line"></div>
+
+  <!--End of forth analysis block-->
+
+  <!-- fifth Analysis block-->
+      <br>
+      <div class="row" id="fifththAnalysis">
+        <section class="col-sm-6 col-md-6 col-lg-4">
+          <br>
+          <br>
+          <p><br>While the U.S. is leading the highest annual growth rate for health and education as a percentage of GDP, China is the leader with the per capita growth which reflects the Chinese government committment towards better education and healthcare standards</p>
+          <br>
+        </section>
+        <section class="col-sm-6 col-md-6 col-lg-4">
+              <div id="annualGrowthPerCapita" style="width: 600px; height: 500px;"></div>
+        </section>
+      </div>
+  
+    <p></p>
+    <div class="line"></div>
+  
+    <!--End of fifth analysis block-->
+
+    <!-- Conclusion-->
+      
+      <div class="row" id="conclusion">
+        <section class="col-sm-12 col-md-12 col-lg-12">
+          
+          <p><br>Key findings from the analysis is that country Gross Domestic Product is not a direct indication of the quality of living within the country, per capita spending might provide a better indication.
+          Countries involved in global or regional conflicts tends to spend more on military which directly affects other spending buckets. 
+          In general when we link the global political scene, it is obvious that all spending buckets are affecting each other directly or in-directly but the rise of a major world powers is associated with investments in education.   </p>
+          <br>
+        </section>
+      </div>
+  
+    <p></p>
+    <div class="line"></div>
+  
+    <!--End of fifth analysis block-->
+
+        <div id="content_footer">
+            <div id="footer">
+                <!-- Copyright &copy;  -->
+                <script>
+                    var d = new Date();
+                    document.write(d.getFullYear());
+                </script>
+                 | Mina Hanna
+                 | GWU
+            </div>
+        </div>
+      
+<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
